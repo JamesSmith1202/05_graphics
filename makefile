@@ -3,6 +3,9 @@ CFLAGS= -Wall
 LDFLAGS= -lm
 CC= gcc
 
+run: all
+	./main script
+
 all: $(OBJECTS)
 	$(CC) -o main $(OBJECTS) $(LDFLAGS)
 
@@ -22,4 +25,4 @@ parser.o: parser.c parser.h matrix.h draw.h display.h ml6.h
 	$(CC) $(CFLAGS) -c parser.c
 
 clean:
-	rm *.o *~
+	rm -f *.o *~ *.png main

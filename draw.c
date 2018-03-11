@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "ml6.h"
 #include "display.h"
@@ -19,6 +20,11 @@
 void add_circle( struct matrix * points,
                  double cx, double cy, double cz,
                  double r, double step ) {
+  double t, theta;
+  theta = 2 * M_PI;
+  for(t = 0;t < 1; t+=step){
+    add_edge(points, cx+r*cos(theta*t), cy+r*sin(theta*t), cz, cx+r*cos(theta*(t + step)), cy+r*sin(theta * (t + step)), cz);
+  }
 }
 
 /*======== void add_curve() ==========
@@ -45,6 +51,43 @@ void add_curve( struct matrix *points,
                 double x2, double y2, 
                 double x3, double y3, 
                 double step, int type ) {
+  struct matrix * curve_matrix;
+  struct matrix * point_matrix;
+  point_matrix = new_matrix(4, 2);
+  point_matrix->m[0][0]=x0;
+  point_matrix->m[1][0]=x1;
+  point_matrix->m[2][0]=x2;
+  point_matrix->m[3][0]=x3;
+  point_matrix->m[0][1]=y0;
+  point_matrix->m[1][1]=y1;
+  point_matrix->m[2][1]=y2;
+  point_matrix->m[3][1]=y3;
+
+  if(type){//if it is bezier
+    curve_matrix = make_bezier();
+  }
+  else{
+    curve_matrix = make_hermite();
+  }
+  matrix_mult(curve_matrix, point_matrix);
+  
+  double t, ax, bx, cx, dx, ay, by, cy, dy, x, y;
+  ax = point_matrix->m[0][0];
+  bx = point_matrix->m[1][0];
+  cx = point_matrix->m[2][0];
+  dx = point_matrix->m[3][0];
+  ay = point_matrix->m[0][1];
+  by = point_matrix->m[1][1];
+  cy = point_matrix->m[2][1];
+  dy = point_matrix->m[3][1];
+
+  for(t=0;t<1;t+=step){
+    x = ax*pow(t, 3) + bx*pow(t, 2) + cx*t + dx;
+    y = ay*pow(t, 3) + by*pow(t, 2) + cy*t + dy;
+    add_edge(points, ax*pow(t, 3) + bx*pow(t, 2) + cx*t + dx, ay*pow(t, 3) + by*pow(t, 2) + cy*t + dy, 0, ax*pow(t+step, 3) + bx*pow(t+step, 2) + cx*(t+step) + dx, ay*pow(t+step, 3) + by*pow(t+step, 2) + cy*(t+step) + dy, 0);
+  }
+  free_matrix(point_matrix);
+  free_matrix(curve_matrix);
 }
 
 

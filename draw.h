@@ -3,7 +3,7 @@
 
 #include "matrix.h"
 #include "ml6.h"
-
+#define STEP 0.02
 
 //advanced shapes
 void add_circle( struct matrix * points, 
