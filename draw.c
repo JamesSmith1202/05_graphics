@@ -54,6 +54,7 @@ void add_curve( struct matrix *points,
   struct matrix * curve_matrix;
   struct matrix * point_matrix;
   point_matrix = new_matrix(4, 2);
+  ident(point_matrix);
   point_matrix->m[0][0]=x0;
   point_matrix->m[1][0]=x1;
   point_matrix->m[2][0]=x2;
@@ -62,7 +63,7 @@ void add_curve( struct matrix *points,
   point_matrix->m[1][1]=y1;
   point_matrix->m[2][1]=y2;
   point_matrix->m[3][1]=y3;
-
+  
   if(type){//if it is bezier
     curve_matrix = make_bezier();
   }
@@ -71,7 +72,7 @@ void add_curve( struct matrix *points,
   }
   matrix_mult(curve_matrix, point_matrix);
   
-  double t, ax, bx, cx, dx, ay, by, cy, dy, x, y;
+  double t, ax, bx, cx, dx, ay, by, cy, dy, x, y, x_step, y_step;
   ax = point_matrix->m[0][0];
   bx = point_matrix->m[1][0];
   cx = point_matrix->m[2][0];
@@ -84,7 +85,9 @@ void add_curve( struct matrix *points,
   for(t=0;t<1;t+=step){
     x = ax*pow(t, 3) + bx*pow(t, 2) + cx*t + dx;
     y = ay*pow(t, 3) + by*pow(t, 2) + cy*t + dy;
-    add_edge(points, ax*pow(t, 3) + bx*pow(t, 2) + cx*t + dx, ay*pow(t, 3) + by*pow(t, 2) + cy*t + dy, 0, ax*pow(t+step, 3) + bx*pow(t+step, 2) + cx*(t+step) + dx, ay*pow(t+step, 3) + by*pow(t+step, 2) + cy*(t+step) + dy, 0);
+    x_step = ax*pow(t + step, 3) + bx*pow(t + step, 2) + cx*(t + step) + dx;
+    y_step = ay*pow(t + step, 3) + by*pow(t + step, 2) + cy*(t + step) + dy;
+    add_edge(points, x, y, 0, x_step, y_step, 0);
   }
   free_matrix(point_matrix);
   free_matrix(curve_matrix);
