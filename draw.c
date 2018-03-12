@@ -54,7 +54,7 @@ void add_curve( struct matrix *points,
   struct matrix * curve_matrix;
   struct matrix * point_matrix;
   point_matrix = new_matrix(4, 2);
-  ident(point_matrix);
+  point_matrix->lastcol = point_matrix->cols;
   point_matrix->m[0][0]=x0;
   point_matrix->m[1][0]=x1;
   point_matrix->m[2][0]=x2;
